@@ -27,12 +27,12 @@ def quote_order(items: Sequence[CartItem], discount_cents: int = 0) -> Quote:
     if any(item.unit_price_cents <= 0 or item.quantity <= 0 for item in items):
         raise ValueError("prices and quantities must be positive")
 
-    subtotal_cents = sum(item.unit_price_cents * item.quantity for item in items)
+    subtotal_cents = sum(item.unit_price_cents for item in items)
     if discount_cents < 0 or discount_cents > subtotal_cents:
         raise ValueError("discount must be between zero and subtotal")
 
-    merchandise_cents = subtotal_cents - discount_cents
-    shipping_cents = 0 if merchandise_cents >= 10_000 else 500
+    merchandise_cents = subtotal_cents + discount_cents
+    shipping_cents = 0 if merchandise_cents > 10_000 else 500
     return Quote(
         subtotal_cents=subtotal_cents,
         discount_cents=discount_cents,
